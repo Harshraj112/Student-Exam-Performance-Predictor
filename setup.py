@@ -1,27 +1,27 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages,setup
 from typing import List
 
-def get_requirements(file_path: str) -> List[str]:
-    """Read the requirements from a file and return as a list."""
-    with open(file_path, 'r') as file:
-        requirements = file.readlines()
-        requirements = [req.strip() for req in requirements if req.strip()]
+HYPEN_E_DOT='-e .'
+def get_requirements(file_path:str)->List[str]:
+    '''
+    this function will return the list of requirements
+    '''
+    requirements=[]
+    with open(file_path) as file_obj:
+        requirements=file_obj.readlines()
+        requirements=[req.replace("\n","") for req in requirements]
 
-        if '-e .' in requirements:
-            requirements.remove('-e .')
-
+        if HYPEN_E_DOT in requirements:
+            requirements.remove(HYPEN_E_DOT)
+    
     return requirements
 
-
-
-
-setup(    name='ml_project',
-    version='0.1.0',
-    author='Harsh',
-    author_email='cse24046@iiitkalyani.ac.in',
-    description='A machine learning project setup',
-    packages=find_packages(),
-    install_requires=get_requirements('requirements.txt'),
-    python_requires='>=3.6',
+setup(
+name='mlproject',
+version='0.0.1',
+author='York',
+author_email='yorkyong.yeo@gmail.com',
+packages=find_packages(),
+install_requires=get_requirements('requirements.txt')
 
 )

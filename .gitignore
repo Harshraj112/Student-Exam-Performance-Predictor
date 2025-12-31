@@ -208,4 +208,12 @@ __marimo__/
 
 
 .venv1/
+.artifacts/preprocessor.pkl 
+.artifacts/tokenizer.pkl 
+.artifacts/model_config.json 
+.artifacts/pytorch_model.bin 
+.artifacts/special_tokens_map.json 
+.artifacts/merges.txt 
+.artifacts/vocab.json
 .artifacts/
+

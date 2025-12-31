@@ -1,22 +1,17 @@
 import logging
 import os
-from datetime import datetime
+from datetime import datetime # type: ignore
 
-LOG_FILE = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
-LOG_DIR = os.path.join(os.getcwd(), "logs")
-os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE=f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+logs_path=os.path.join(os.getcwd(),"logs",LOG_FILE)
+os.makedirs(logs_path,exist_ok=True)
 
-LOG_FILE_PATH = os.path.join(LOG_DIR, LOG_FILE)
+LOG_FILE_PATH=os.path.join(logs_path,LOG_FILE)
 
 logging.basicConfig(
     filename=LOG_FILE_PATH,
+    format="[ %(asctime)s ] %(lineno)d %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+
+
 )
-
-logger = logging.getLogger(__name__)
-
-if __name__ == "__main__":
-    logger.info("Logger has been configured.")
-    print(f"Log written to {LOG_FILE_PATH}")
