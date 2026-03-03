@@ -6,5 +6,6 @@ scikit-learn
 catboost
 xgboost
 dill
-streamlit
+streamlit>=1.30
+altair>=5.0,<6.0
 #-e . #to link to setup.py and build the package
