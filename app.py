@@ -1,42 +1,71 @@
-from flask import Flask,request,render_template
+import streamlit as st
 import numpy as np
 import pandas as pd
 
 from sklearn.preprocessing import StandardScaler
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
-application=Flask(__name__)
+st.set_page_config(page_title="Student Exam Performance Predictor", page_icon="📚", layout="centered")
 
-app=application
+st.title("📚 Student Exam Performance Predictor")
+st.markdown("### Predict your **Math Score** based on your profile")
 
-## Route for a home page
+st.divider()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+with st.form("prediction_form"):
+    col1, col2 = st.columns(2)
 
-@app.route('/predictdata', methods=['GET','POST'])
-def predict_datapoint():
-    if request.method=='GET':
-        return render_template('home.html')
-    else:
-        data=CustomData(
-            gender=request.form.get('gender'),
-            race_ethnicity=request.form.get('ethnicity'),
-            parental_level_of_education=request.form.get('parental_level_of_education'),
-            lunch=request.form.get('lunch'),
-            test_preparation_course=request.form.get('test_preparation_course'),
-            reading_score=float(request.form.get('writing_score')),
-            writing_score=float(request.form.get('reading_score'))
+    with col1:
+        gender = st.selectbox("Gender", options=["male", "female"])
+
+        race_ethnicity = st.selectbox(
+            "Race / Ethnicity",
+            options=["group A", "group B", "group C", "group D", "group E"],
         )
 
+        parental_level_of_education = st.selectbox(
+            "Parental Level of Education",
+            options=[
+                "associate's degree",
+                "bachelor's degree",
+                "high school",
+                "master's degree",
+                "some college",
+                "some high school",
+            ],
+        )
 
-        pred_df=data.get_data_as_data_frame()
-        print(pred_df)
+    with col2:
+        lunch = st.selectbox("Lunch Type", options=["free/reduced", "standard"])
 
-        predict_pipeline=PredictPipeline()
-        results = predict_pipeline.predict(pred_df)
-        return render_template('home.html',results=results[0])
-    
-if __name__=="__main__":
-    app.run(host="0.0.0.0",debug=True)
+        test_preparation_course = st.selectbox(
+            "Test Preparation Course", options=["none", "completed"]
+        )
+
+        reading_score = st.number_input(
+            "Reading Score (out of 100)", min_value=0, max_value=100, value=50
+        )
+
+        writing_score = st.number_input(
+            "Writing Score (out of 100)", min_value=0, max_value=100, value=50
+        )
+
+    submitted = st.form_submit_button("🎯 Predict your Math Score")
+
+if submitted:
+    data = CustomData(
+        gender=gender,
+        race_ethnicity=race_ethnicity,
+        parental_level_of_education=parental_level_of_education,
+        lunch=lunch,
+        test_preparation_course=test_preparation_course,
+        reading_score=float(reading_score),
+        writing_score=float(writing_score),
+    )
+
+    pred_df = data.get_data_as_data_frame()
+
+    predict_pipeline = PredictPipeline()
+    results = predict_pipeline.predict(pred_df)
+
+    st.success(f"🎓 Predicted Math Score: **{results[0]:.2f}**")
