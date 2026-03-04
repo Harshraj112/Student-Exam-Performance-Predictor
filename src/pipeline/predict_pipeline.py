@@ -2,12 +2,30 @@ import sys
 import os
 import pandas as pd
 from src.exception import CustomException
-from src.utils import load_object
+from src.utils import load_object, save_object
 
 
 class PredictPipeline:
     def __init__(self):
         pass
+
+    def _rebuild_preprocessor(self):
+        """Rebuild preprocessor when the pickled version is incompatible with the current scikit-learn."""
+        from src.components.data_transformation import DataTransformation
+
+        train_path=os.path.join('artifacts','train.csv')
+        preprocessor_path=os.path.join('artifacts','preprocessor.pkl')
+
+        train_df=pd.read_csv(train_path)
+        target_column_name="math_score"
+        input_features=train_df.drop(columns=[target_column_name])
+
+        data_transformation=DataTransformation()
+        preprocessor=data_transformation.get_data_transformer_object()
+        preprocessor.fit(input_features)
+
+        save_object(file_path=preprocessor_path, obj=preprocessor)
+        return preprocessor
 
     def predict(self,features):
         try:
@@ -16,7 +34,11 @@ class PredictPipeline:
             model=load_object(file_path=model_path)
             preprocessor=load_object(file_path=preprocessor_path)
             print("After Loading")
-            data_scaled=preprocessor.transform(features)
+            try:
+                data_scaled=preprocessor.transform(features)
+            except AttributeError:
+                preprocessor=self._rebuild_preprocessor()
+                data_scaled=preprocessor.transform(features)
             preds=model.predict(data_scaled)
             return preds
         
